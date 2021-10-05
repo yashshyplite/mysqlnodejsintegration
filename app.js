@@ -30,6 +30,7 @@ app.get('/create',(req,res)=>{
         res.send("Database created");
     });
 });
+//create table
 app.get('/table',(req,res)=>{
     let sql = "USE nodemysql";
     db.query(sql,err=>{
@@ -45,7 +46,7 @@ app.get('/table',(req,res)=>{
         res.send("Table Created");
     });
 });
-
+//insert data
 app.get('/employee1',(req,res)=>{
     let sql = "USE nodemysql";
     db.query(sql,err=>{
@@ -54,7 +55,7 @@ app.get('/employee1',(req,res)=>{
         }
     });
 
-    let post = {ename:'yash',designation:"intern"};
+    let post = {ename:'sudhanshu',designation:"sd"};
     sql = "INSERT INTO employee SET ?";
     db.query(sql,post,err=>{
         if(err){
@@ -63,7 +64,7 @@ app.get('/employee1',(req,res)=>{
     });
     res.send("employee Created");
 })
-
+//get data
 app.get('/getemployee',(req,res)=>{
     let sql = "USE nodemysql";
     db.query(sql,err=>{
@@ -80,7 +81,38 @@ app.get('/getemployee',(req,res)=>{
         res.send("fetched");
     });
 })
-
+//update table
+app.get('/update',(req,res)=>{
+    let sql = "USE nodemysql";
+    db.query(sql,err=>{
+        if(err){
+            throw err;
+        }
+    });
+    sql = "UPDATE employee SET ename ='xxx' WHERE id='1'";
+    db.query(sql,err=>{
+        if(err){
+            throw err;
+        }
+        res.send("Table updated");
+    });
+});
+//delete entry
+app.get('/delete',(req,res)=>{
+    let sql = "USE nodemysql";
+    db.query(sql,err=>{
+        if(err){
+            throw err;
+        }
+    });
+    sql = "DELETE FROM employee WHERE id='1'";
+    db.query(sql,err=>{
+        if(err){
+            throw err;
+        }
+        res.send("deleted");
+    });
+});
 app.listen('3030',()=>{
     console.log("server started");
 });
