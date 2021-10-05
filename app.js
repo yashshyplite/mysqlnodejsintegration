@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql');
+const util = require('util');
 
 //create connection 
 const db= mysql.createConnection({
@@ -10,6 +11,7 @@ const db= mysql.createConnection({
     port: process.env.MYSQL_PORT
 });
 
+
 db.connect(err=>{
     if(err){
         throw err;
@@ -18,100 +20,57 @@ db.connect(err=>{
 });
 
 const app=express();
+const query = util.promisify(db.query).bind(db);
 
 //create Database
 
-app.get('/create',(req,res)=>{
+app.get('/create',async (req,res)=>{
     let sql="CREATE DATABASE nodemysql";
-    db.query(sql,(err)=>{
-        if(err){
-            throw err;
-        }
-        res.send("Database created");
-    });
+    await query(sql)
+    res.send("Database created");
 });
 //create table
-app.get('/table',(req,res)=>{
+app.get('/table',async (req,res)=>{
     let sql = "USE nodemysql";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql);
     sql= "Create TABLE employee(id int AUTO_INCREMENT,ename VARCHAR(255),designation VARCHAR(255),PRIMARY KEY(id))"
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-        res.send("Table Created");
-    });
+    await query(sql)
+    res.send("Table Created");
 });
 //insert data
-app.get('/employee1',(req,res)=>{
+app.get('/employee1',async (req,res)=>{
     let sql = "USE nodemysql";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql);
 
     let post = {ename:'sudhanshu',designation:"sd"};
     sql = "INSERT INTO employee SET ?";
-    db.query(sql,post,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql,post);
     res.send("employee Created");
 })
 //get data
-app.get('/getemployee',(req,res)=>{
+app.get('/getemployee',async (req,res)=>{
     let sql = "USE nodemysql";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql);
     sql = "SELECT * FROM employee";
-    let query= db.query(sql,(err,result)=>{
-        if(err){
-            throw err;
-        }
-        console.log(result);
-        res.send("fetched");
-    });
+    var result = await query(sql);
+    console.log(result);
+    res.send("fetched");
 })
 //update table
-app.get('/update',(req,res)=>{
+app.get('/update',async (req,res)=>{
     let sql = "USE nodemysql";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql);
     sql = "UPDATE employee SET ename ='xxx' WHERE id='1'";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-        res.send("Table updated");
-    });
+    await query(sql)
+    res.send("Table updated");
 });
 //delete entry
-app.get('/delete',(req,res)=>{
+app.get('/delete',async (req,res)=>{
     let sql = "USE nodemysql";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-    });
+    await query(sql);
     sql = "DELETE FROM employee WHERE id='1'";
-    db.query(sql,err=>{
-        if(err){
-            throw err;
-        }
-        res.send("deleted");
-    });
+    await query(sql)
+    res.send("deleted");
 });
 app.listen('3030',()=>{
     console.log("server started");
